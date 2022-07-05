@@ -274,10 +274,13 @@ impl FieldValue {
             FieldType::Character => {
                 // let value = read_string_of_len(&mut source, field_info.field_length)?;
                 let value = trim_field_data(field_bytes);
+
                 if value.is_empty() {
                     FieldValue::Character(None)
                 } else {
-                    FieldValue::Character(Some(String::from_utf8_lossy(value).to_string()))
+                    use encoding_rs::SHIFT_JIS;
+                    let (content, _, _) = SHIFT_JIS.decode(&value);
+                    FieldValue::Character(Some(content.into()))
                 }
             }
             FieldType::Numeric => {
